@@ -14,20 +14,12 @@ print(f"Current working directory: {os.getcwd()}")
 # Load the trained model
 def load_model():
     try:
-        print(f"Current directory contents: {os.listdir()}")
-        with open('seed_type_classification.pkl', 'rb') as model_file:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(script_dir, 'seed_type_classification.pkl')
+        print(f"Attempting to load model from: {model_path}")
+        with open(model_path, 'rb') as model_file:
             model = pickle.load(model_file)
             return model
-    except FileNotFoundError:
-        print("File not found. Looking in parent directory...")
-        try:
-            # Try the parent directory
-            with open('../seed_type_classification.pkl', 'rb') as model_file:
-                model = pickle.load(model_file)
-                return model
-        except Exception as e:
-            print(f"Still couldn't find the file: {e}")
-            return None
     except Exception as e:
         print(f"An error occurred while loading the model: {e}")
         return None

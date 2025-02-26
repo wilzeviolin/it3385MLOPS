@@ -188,58 +188,44 @@ HTML_TEMPLATE = '''
         <form action="/" method="post">
             <div class="form-group">
                 <label for="area">Area:</label>
-                <input type="number" id="area" name="area" step="0.01" required 
-                       value="{{ request.form.get('area', '') }}"
-                       min="{{ ranges['area']['min'] }}" max="{{ ranges['area']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['area']['min'] }} to {{ ranges['area']['max'] }}</div>
+                <input type="number" id="area" name="area" step="1" required 
+                       value="{{ request.form.get('area', '') }}">
             </div>
 
             <div class="form-group">
                 <label for="perimeter">Perimeter:</label>
-                <input type="number" id="perimeter" name="perimeter" step="0.01" required 
-                       value="{{ request.form.get('perimeter', '') }}"
-                       min="{{ ranges['perimeter']['min'] }}" max="{{ ranges['perimeter']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['perimeter']['min'] }} to {{ ranges['perimeter']['max'] }}</div>
+                <input type="number" id="perimeter" name="perimeter" step="1" required 
+                       value="{{ request.form.get('perimeter', '') }}">
             </div>
 
             <div class="form-group">
                 <label for="compactness">Compactness:</label>
-                <input type="number" id="compactness" name="compactness" step="0.01" required 
-                       value="{{ request.form.get('compactness', '') }}"
-                       min="{{ ranges['compactness']['min'] }}" max="{{ ranges['compactness']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['compactness']['min'] }} to {{ ranges['compactness']['max'] }}</div>
+                <input type="number" id="compactness" name="compactness" step="1" required 
+                       value="{{ request.form.get('compactness', '') }}">
             </div>
 
             <div class="form-group">
                 <label for="length">Length:</label>
-                <input type="number" id="length" name="length" step="0.01" required 
-                       value="{{ request.form.get('length', '') }}"
-                       min="{{ ranges['length']['min'] }}" max="{{ ranges['length']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['length']['min'] }} to {{ ranges['length']['max'] }}</div>
+                <input type="number" id="length" name="length" step="1" required 
+                       value="{{ request.form.get('length', '') }}">
             </div>
 
             <div class="form-group">
                 <label for="width">Width:</label>
-                <input type="number" id="width" name="width" step="0.01" required 
-                       value="{{ request.form.get('width', '') }}"
-                       min="{{ ranges['width']['min'] }}" max="{{ ranges['width']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['width']['min'] }} to {{ ranges['width']['max'] }}</div>
+                <input type="number" id="width" name="width" step="1" required 
+                       value="{{ request.form.get('width', '') }}">
             </div>
 
             <div class="form-group">
                 <label for="asymmetry_coeff">Asymmetry Coefficient:</label>
-                <input type="number" id="asymmetry_coeff" name="asymmetry_coeff" step="0.01" required 
-                       value="{{ request.form.get('asymmetry_coeff', '') }}"
-                       min="{{ ranges['asymmetry_coeff']['min'] }}" max="{{ ranges['asymmetry_coeff']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['asymmetry_coeff']['min'] }} to {{ ranges['asymmetry_coeff']['max'] }}</div>
+                <input type="number" id="asymmetry_coeff" name="asymmetry_coeff" step="1" required 
+                       value="{{ request.form.get('asymmetry_coeff', '') }}">
             </div>
 
             <div class="form-group">
                 <label for="groove">Groove:</label>
-                <input type="number" id="groove" name="groove" step="0.01" required 
-                       value="{{ request.form.get('groove', '') }}"
-                       min="{{ ranges['groove']['min'] }}" max="{{ ranges['groove']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['groove']['min'] }} to {{ ranges['groove']['max'] }}</div>
+                <input type="number" id="groove" name="groove" step="1" required 
+                       value="{{ request.form.get('groove', '') }}">
             </div>
 
             <button type="submit" {{ 'disabled' if not model_loaded else '' }}>
@@ -270,6 +256,7 @@ HTML_TEMPLATE = '''
         </div>
     </div>
 </body>
+
 
 </html>
 '''

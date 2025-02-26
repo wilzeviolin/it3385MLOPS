@@ -278,41 +278,41 @@ def home():
     if not model_loaded:
         error = "Model is not loaded. Check server logs for more details."
 
-   if request.method == 'POST':
-       if model_loaded:
-           try:
-               # Extract features from form data
-               area = float(request.form['area'])
-               perimeter = float(request.form['perimeter'])
-               compactness = float(request.form['compactness'])
-               length = float(request.form['length'])
-               width = float(request.form['width'])
-               asymmetry_coeff = float(request.form['asymmetry_coeff'])
-               groove = float(request.form['groove'])
-               
-               # Calculate the length-width ratio that the model expects
-               length_width_ratio = length / width if width != 0 else 0
-               
-               # Create a pandas DataFrame with the expected column names
-               import pandas as pd
-               features_df = pd.DataFrame({
-                'Area': [area],
-                'Perimeter': [perimeter], 
-                'Compactness': [compactness], 
-                'Length': [length], 
-                'Width': [width], 
-                'AsymmetryCoeff': [asymmetry_coeff], 
-                'Groove': [groove],
-                'Length_Width_Ratio': [length_width_ratio]
-            })
-            
-            # Make the prediction using the DataFrame
-            prediction = int(model.predict(features_df)[0])
-        except Exception as e:
-            error = f"Error making prediction: {str(e)}"
-    else:
-        error = "Model is not loaded. Cannot make predictions."
-        
+    if request.method == 'POST':
+        if model_loaded:
+            try:
+                # Extract features from form data
+                area = float(request.form['area'])
+                perimeter = float(request.form['perimeter'])
+                compactness = float(request.form['compactness'])
+                length = float(request.form['length'])
+                width = float(request.form['width'])
+                asymmetry_coeff = float(request.form['asymmetry_coeff'])
+                groove = float(request.form['groove'])
+                
+                # Calculate the length-width ratio that the model expects
+                length_width_ratio = length / width if width != 0 else 0
+                
+                # Create a pandas DataFrame with the expected column names
+                import pandas as pd
+                features_df = pd.DataFrame({
+                    'Area': [area],
+                    'Perimeter': [perimeter], 
+                    'Compactness': [compactness], 
+                    'Length': [length], 
+                    'Width': [width], 
+                    'AsymmetryCoeff': [asymmetry_coeff], 
+                    'Groove': [groove],
+                    'Length_Width_Ratio': [length_width_ratio]
+                })
+                
+                # Make the prediction using the DataFrame
+                prediction = int(model.predict(features_df)[0])
+            except Exception as e:
+                error = f"Error making prediction: {str(e)}"
+        else:
+            error = "Model is not loaded. Cannot make predictions."
+
     return render_template_string(HTML_TEMPLATE, 
                                   prediction=prediction, 
                                   error=error, 

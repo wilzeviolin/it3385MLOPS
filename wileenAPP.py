@@ -6,6 +6,11 @@ from flask import Flask, request, jsonify, render_template_string
 # Initialize Flask app
 app = Flask(__name__)
 
+
+print(f"Current working directory: {os.getcwd()}")
+
+
+
 # Load the trained model
 def load_model():
     try:

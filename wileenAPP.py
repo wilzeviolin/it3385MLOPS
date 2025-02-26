@@ -6,20 +6,42 @@ from flask import Flask, request, jsonify, render_template_string
 # Initialize Flask app
 app = Flask(__name__)
 
-
+# Print environment information for debugging
 print(f"Current working directory: {os.getcwd()}")
-
-
+print(f"Files in current directory: {os.listdir(os.getcwd())}")
 
 # Load the trained model
 def load_model():
     try:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(script_dir, 'seed_type_classification.pkl')
-        print(f"Attempting to load model from: {model_path}")
-        with open(model_path, 'rb') as model_file:
-            model = pickle.load(model_file)
-            return model
+        # Check multiple possible locations for the model file
+        possible_locations = [
+            # Simple relative path (most likely on Render)
+            'seed_type_classification.pkl',
+            
+            # Current working directory
+            os.path.join(os.getcwd(), 'seed_type_classification.pkl'),
+            
+            # Script directory
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'seed_type_classification.pkl'),
+            
+            # Parent directory
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'seed_type_classification.pkl')
+        ]
+        
+        for location in possible_locations:
+            print(f"Checking for model at: {location}")
+            if os.path.exists(location):
+                print(f"Found model at: {location}")
+                try:
+                    with open(location, 'rb') as model_file:
+                        model = pickle.load(model_file)
+                        print("Model loaded successfully!")
+                        return model
+                except Exception as e:
+                    print(f"Error loading model from {location}: {e}")
+        
+        print("Could not find model in any of the expected locations")
+        return None
     except Exception as e:
         print(f"An error occurred while loading the model: {e}")
         return None

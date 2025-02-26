@@ -239,33 +239,36 @@ def home():
     error = None
     model_loaded = model is not None
 
-   if request.method == 'POST':
-    if model_loaded:
-        try:
-            # Extract features from form data
-            area = float(request.form['area'])
-            perimeter = float(request.form['perimeter'])
-            compactness = float(request.form['compactness'])
-            length = float(request.form['length'])
-            width = float(request.form['width'])
-            asymmetry_coeff = float(request.form['asymmetry_coeff'])
-            groove = float(request.form['groove'])
-            
-            # Prepare features for prediction
-            features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
-            
-            # Make the prediction
-            prediction = int(model.predict(features)[0])
-        except Exception as e:
-            error = f"Error making prediction: {str(e)}"
-    else:
-        error = "Model is not loaded. Cannot make predictions."
+    if not model_loaded:
+        error = "Model is not loaded. Check server logs for more details."
+
+    if request.method == 'POST':
+        if model_loaded:
+            try:
+                # Extract features from form data
+                area = float(request.form['area'])
+                perimeter = float(request.form['perimeter'])
+                compactness = float(request.form['compactness'])
+                length = float(request.form['length'])
+                width = float(request.form['width'])
+                asymmetry_coeff = float(request.form['asymmetry_coeff'])
+                groove = float(request.form['groove'])
+                
+                # Prepare features for prediction
+                features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
+                
+                # Make the prediction
+                prediction = int(model.predict(features)[0])
+            except Exception as e:
+                error = f"Error making prediction: {str(e)}"
+        else:
+            error = "Model is not loaded. Cannot make predictions."
 
     return render_template_string(HTML_TEMPLATE, 
-                                   prediction=prediction, 
-                                   error=error, 
-                                   model_loaded=model_loaded, 
-                                   ranges=FEATURE_RANGES)
+                                  prediction=prediction, 
+                                  error=error, 
+                                  model_loaded=model_loaded, 
+                                  ranges=FEATURE_RANGES)
 
 # Try to initialize model again if it failed to load at startup
 @app.before_request

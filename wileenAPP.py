@@ -11,36 +11,58 @@ print(f"Current working directory: {os.getcwd()}")
 print(f"Files in current directory: {os.listdir(os.getcwd())}")
 
 # Load the trained model
+# Load the trained model
 def load_model():
     try:
-        # Check multiple possible locations for the model file
-        possible_locations = [
+        # Check multiple possible locations for the model files
+        model_filenames = ['seed_pipeline.pkl', 'seed_type_classification.pkl']
+        possible_locations = []
+        
+        for filename in model_filenames:
             # Simple relative path (most likely on Render)
-            'seed_type_classification.pkl',
+            possible_locations.append(filename)
             
             # Current working directory
-            os.path.join(os.getcwd(), 'seed_type_classification.pkl'),
+            possible_locations.append(os.path.join(os.getcwd(), filename))
             
             # Script directory
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'seed_type_classification.pkl'),
+            possible_locations.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), filename))
             
             # Parent directory
-            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'seed_type_classification.pkl')
-        ]
+            possible_locations.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), filename))
         
         for location in possible_locations:
             print(f"Checking for model at: {location}")
             if os.path.exists(location):
                 print(f"Found model at: {location}")
+                
+                # Try different loading methods
                 try:
+                    # Method 1: Standard loading
                     with open(location, 'rb') as model_file:
                         model = pickle.load(model_file)
-                        print("Model loaded successfully!")
+                        print(f"Model loaded successfully from {location}!")
                         return model
-                except Exception as e:
-                    print(f"Error loading model from {location}: {e}")
+                except Exception as e1:
+                    print(f"Standard loading failed from {location}: {e1}")
+                    try:
+                        # Method 2: Try with latin1 encoding
+                        with open(location, 'rb') as model_file:
+                            model = pickle.load(model_file, encoding='latin1')
+                            print(f"Model loaded with latin1 encoding from {location}!")
+                            return model
+                    except Exception as e2:
+                        print(f"Latin1 encoding failed from {location}: {e2}")
+                        try:
+                            # Method 3: Try with bytes encoding
+                            with open(location, 'rb') as model_file:
+                                model = pickle.load(model_file, encoding='bytes')
+                                print(f"Model loaded with bytes encoding from {location}!")
+                                return model
+                        except Exception as e3:
+                            print(f"Bytes encoding failed from {location}: {e3}")
         
-        print("Could not find model in any of the expected locations")
+        print("Could not find or load model from any of the expected locations")
         return None
     except Exception as e:
         print(f"An error occurred while loading the model: {e}")

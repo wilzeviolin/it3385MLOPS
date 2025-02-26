@@ -47,5 +47,6 @@ def predict():
     # Return the prediction as a response
     return jsonify({"predicted_wheat_type": int(prediction[0])})
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if not provided
+    app.run(host='0.0.0.0', port=port)

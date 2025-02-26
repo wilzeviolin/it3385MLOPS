@@ -14,9 +14,20 @@ print(f"Current working directory: {os.getcwd()}")
 # Load the trained model
 def load_model():
     try:
+        print(f"Current directory contents: {os.listdir()}")
         with open('seed_type_classification.pkl', 'rb') as model_file:
             model = pickle.load(model_file)
             return model
+    except FileNotFoundError:
+        print("File not found. Looking in parent directory...")
+        try:
+            # Try the parent directory
+            with open('../seed_type_classification.pkl', 'rb') as model_file:
+                model = pickle.load(model_file)
+                return model
+        except Exception as e:
+            print(f"Still couldn't find the file: {e}")
+            return None
     except Exception as e:
         print(f"An error occurred while loading the model: {e}")
         return None
@@ -232,15 +243,26 @@ def home():
         error = "Model is not loaded. Check server logs for more details."
 
     if request.method == 'POST':
-        if model_loaded:
-            try:
-                # Extract features and predict (existing code)...
-                # Make the prediction
-                prediction = model.predict(features)
-            except Exception as e:
-                error = f"Error making prediction: {str(e)}"
-        else:
-            error = "Model is not loaded. Cannot make predictions."
+    if model_loaded:
+        try:
+            # Extract features from form data
+            area = float(request.form['area'])
+            perimeter = float(request.form['perimeter'])
+            compactness = float(request.form['compactness'])
+            length = float(request.form['length'])
+            width = float(request.form['width'])
+            asymmetry_coeff = float(request.form['asymmetry_coeff'])
+            groove = float(request.form['groove'])
+            
+            # Prepare features for prediction
+            features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
+            
+            # Make the prediction
+            prediction = int(model.predict(features)[0])
+        except Exception as e:
+            error = f"Error making prediction: {str(e)}"
+    else:
+        error = "Model is not loaded. Cannot make predictions."
 
     return render_template_string(HTML_TEMPLATE, 
                                    prediction=prediction, 

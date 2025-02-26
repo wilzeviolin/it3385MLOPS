@@ -239,10 +239,7 @@ def home():
     error = None
     model_loaded = model is not None
 
-    if not model_loaded:
-        error = "Model is not loaded. Check server logs for more details."
-
-    if request.method == 'POST':
+   if request.method == 'POST':
     if model_loaded:
         try:
             # Extract features from form data

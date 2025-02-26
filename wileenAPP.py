@@ -278,28 +278,41 @@ def home():
     if not model_loaded:
         error = "Model is not loaded. Check server logs for more details."
 
-    if request.method == 'POST':
-        if model_loaded:
-            try:
-                # Extract features from form data
-                area = float(request.form['area'])
-                perimeter = float(request.form['perimeter'])
-                compactness = float(request.form['compactness'])
-                length = float(request.form['length'])
-                width = float(request.form['width'])
-                asymmetry_coeff = float(request.form['asymmetry_coeff'])
-                groove = float(request.form['groove'])
-                
-                # Prepare features for prediction
-                features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
-                
-                # Make the prediction
-                prediction = int(model.predict(features)[0])
-            except Exception as e:
-                error = f"Error making prediction: {str(e)}"
-        else:
-            error = "Model is not loaded. Cannot make predictions."
-
+   if request.method == 'POST':
+       if model_loaded:
+           try:
+               # Extract features from form data
+               area = float(request.form['area'])
+               perimeter = float(request.form['perimeter'])
+               compactness = float(request.form['compactness'])
+               length = float(request.form['length'])
+               width = float(request.form['width'])
+               asymmetry_coeff = float(request.form['asymmetry_coeff'])
+               groove = float(request.form['groove'])
+               
+               # Calculate the length-width ratio that the model expects
+               length_width_ratio = length / width if width != 0 else 0
+               
+               # Create a pandas DataFrame with the expected column names
+               import pandas as pd
+               features_df = pd.DataFrame({
+                'Area': [area],
+                'Perimeter': [perimeter], 
+                'Compactness': [compactness], 
+                'Length': [length], 
+                'Width': [width], 
+                'AsymmetryCoeff': [asymmetry_coeff], 
+                'Groove': [groove],
+                'Length_Width_Ratio': [length_width_ratio]
+            })
+            
+            # Make the prediction using the DataFrame
+            prediction = int(model.predict(features_df)[0])
+        except Exception as e:
+            error = f"Error making prediction: {str(e)}"
+    else:
+        error = "Model is not loaded. Cannot make predictions."
+        
     return render_template_string(HTML_TEMPLATE, 
                                   prediction=prediction, 
                                   error=error, 
@@ -324,28 +337,34 @@ def predict():
         data = request.get_json(force=True)
         
         # Extract the features
-        area = data['Area']
-        perimeter = data['Perimeter']
-        compactness = data['Compactness']
-        length = data['Length']
-        width = data['Width']
-        asymmetry_coeff = data['AsymmetryCoeff']
-        groove = data['Groove']
+        area = data.get('Area', data.get('area'))
+        perimeter = data.get('Perimeter', data.get('perimeter'))
+        compactness = data.get('Compactness', data.get('compactness'))
+        length = data.get('Length', data.get('length'))
+        width = data.get('Width', data.get('width'))
+        asymmetry_coeff = data.get('AsymmetryCoeff', data.get('asymmetry_coeff'))
+        groove = data.get('Groove', data.get('groove'))
         
-        # Prepare the input features as a numpy array for prediction
-        features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
+        # Calculate length-width ratio
+        length_width_ratio = length / width if width != 0 else 0
+        
+        # Create DataFrame with proper column names
+        import pandas as pd
+        features_df = pd.DataFrame({
+            'Area': [area],
+            'Perimeter': [perimeter], 
+            'Compactness': [compactness], 
+            'Length': [length], 
+            'Width': [width], 
+            'AsymmetryCoeff': [asymmetry_coeff], 
+            'Groove': [groove],
+            'Length_Width_Ratio': [length_width_ratio]
+        })
         
         # Make the prediction
-        prediction = model.predict(features)
+        prediction = int(model.predict(features_df)[0])
         
         # Return the prediction as a response
-        return jsonify({"predicted_wheat_type": int(prediction[0])})
+        return jsonify({"predicted_wheat_type": prediction})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if not provided
-    print(f"Model loaded: {model is not None}")
-    if model is None:
-        print("WARNING: Model failed to load. Check if 'seed_type_classification.pkl' exists.")
-    app.run(host='0.0.0.0', port=port, debug=True)

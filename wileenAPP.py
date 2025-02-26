@@ -179,11 +179,11 @@ HTML_TEMPLATE = '''
 </head>
 <body>
     <h1>Wheat Type Classifier</h1>
-    
+
     <div class="model-status {{ 'status-ok' if model_loaded else 'status-error' }}">
         Model Status: {{ 'Loaded Successfully' if model_loaded else 'Error Loading Model' }}
     </div>
-    
+
     <div class="container">
         <form action="/" method="post">
             <div class="form-group">
@@ -193,26 +193,23 @@ HTML_TEMPLATE = '''
                        min="{{ ranges['area']['min'] }}" max="{{ ranges['area']['max'] }}">
                 <div class="range-info">Valid range: {{ ranges['area']['min'] }} to {{ ranges['area']['max'] }}</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="perimeter">Perimeter:</label>
-                <input type="number" id="area" name="area" step="0.0001" required 
-                       value="{{ request.form.get('area', '') }}" 
-                       min="{{ ranges['area']['min'] }}" max="{{ ranges['area']['max'] }}" 
-                       pattern="^\d+(\.\d{1,4})?$" 
-                       title="Enter a whole number or a decimal up to 4 decimal places.">
-            <div class="range-info">Valid range: {{ ranges['area']['min'] }} to {{ ranges['area']['max'] }}</div>
-
+                <input type="number" id="perimeter" name="perimeter" step="0.01" required 
+                       value="{{ request.form.get('perimeter', '') }}"
+                       min="{{ ranges['perimeter']['min'] }}" max="{{ ranges['perimeter']['max'] }}">
+                <div class="range-info">Valid range: {{ ranges['perimeter']['min'] }} to {{ ranges['perimeter']['max'] }}</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="compactness">Compactness:</label>
-                <input type="number" id="compactness" name="compactness" step="0.0001" required 
+                <input type="number" id="compactness" name="compactness" step="0.01" required 
                        value="{{ request.form.get('compactness', '') }}"
                        min="{{ ranges['compactness']['min'] }}" max="{{ ranges['compactness']['max'] }}">
                 <div class="range-info">Valid range: {{ ranges['compactness']['min'] }} to {{ ranges['compactness']['max'] }}</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="length">Length:</label>
                 <input type="number" id="length" name="length" step="0.01" required 
@@ -220,7 +217,7 @@ HTML_TEMPLATE = '''
                        min="{{ ranges['length']['min'] }}" max="{{ ranges['length']['max'] }}">
                 <div class="range-info">Valid range: {{ ranges['length']['min'] }} to {{ ranges['length']['max'] }}</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="width">Width:</label>
                 <input type="number" id="width" name="width" step="0.01" required 
@@ -228,7 +225,7 @@ HTML_TEMPLATE = '''
                        min="{{ ranges['width']['min'] }}" max="{{ ranges['width']['max'] }}">
                 <div class="range-info">Valid range: {{ ranges['width']['min'] }} to {{ ranges['width']['max'] }}</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="asymmetry_coeff">Asymmetry Coefficient:</label>
                 <input type="number" id="asymmetry_coeff" name="asymmetry_coeff" step="0.01" required 
@@ -236,7 +233,7 @@ HTML_TEMPLATE = '''
                        min="{{ ranges['asymmetry_coeff']['min'] }}" max="{{ ranges['asymmetry_coeff']['max'] }}">
                 <div class="range-info">Valid range: {{ ranges['asymmetry_coeff']['min'] }} to {{ ranges['asymmetry_coeff']['max'] }}</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="groove">Groove:</label>
                 <input type="number" id="groove" name="groove" step="0.01" required 
@@ -244,23 +241,27 @@ HTML_TEMPLATE = '''
                        min="{{ ranges['groove']['min'] }}" max="{{ ranges['groove']['max'] }}">
                 <div class="range-info">Valid range: {{ ranges['groove']['min'] }} to {{ ranges['groove']['max'] }}</div>
             </div>
-            
+
             <button type="submit" {{ 'disabled' if not model_loaded else '' }}>
                 {{ 'Model Not Loaded - Please Fix' if not model_loaded else 'Predict Wheat Type' }}
             </button>
         </form>
-        
+
+        {% if prediction %}
         <div class="result">
             <h3>Prediction Result:</h3>
             <p><strong>Predicted Wheat Type: {{ prediction }}</strong></p>
         </div>
-        
+        {% endif %}
+
+        {% if error %}
         <div class="error">
             <h3>Error:</h3>
             <p>{{ error }}</p>
-            <p>Make sure the model file 'seed_type_classification.pkl' exists in the application directory.</p>
+            <p>Ensure the model file 'seed_type_classification.pkl' exists in the application directory.</p>
         </div>
-        
+        {% endif %}
+
         <div class="wheat-types">
             <h3>Wheat Type Reference:</h3>
             <p><strong>Type 1:</strong> Kama wheat</p>
@@ -269,6 +270,7 @@ HTML_TEMPLATE = '''
         </div>
     </div>
 </body>
+
 </html>
 '''
 

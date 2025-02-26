@@ -196,10 +196,13 @@ HTML_TEMPLATE = '''
             
             <div class="form-group">
                 <label for="perimeter">Perimeter:</label>
-                <input type="number" id="perimeter" name="perimeter" step="0.01" required 
-                       value="{{ request.form.get('perimeter', '') }}"
-                       min="{{ ranges['perimeter']['min'] }}" max="{{ ranges['perimeter']['max'] }}">
-                <div class="range-info">Valid range: {{ ranges['perimeter']['min'] }} to {{ ranges['perimeter']['max'] }}</div>
+                <input type="number" id="area" name="area" step="0.0001" required 
+                       value="{{ request.form.get('area', '') }}" 
+                       min="{{ ranges['area']['min'] }}" max="{{ ranges['area']['max'] }}" 
+                       pattern="^\d+(\.\d{1,4})?$" 
+                       title="Enter a whole number or a decimal up to 4 decimal places.">
+            <div class="range-info">Valid range: {{ ranges['area']['min'] }} to {{ ranges['area']['max'] }}</div>
+
             </div>
             
             <div class="form-group">

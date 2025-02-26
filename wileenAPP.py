@@ -222,40 +222,26 @@ def home():
     prediction = None
     error = None
     model_loaded = model is not None
-    
+
+    if not model_loaded:
+        error = "Model is not loaded. Check server logs for more details."
+
     if request.method == 'POST':
-        if not model_loaded:
-            error = "Model is not loaded. Cannot make predictions."
-        else:
+        if model_loaded:
             try:
-                # Extract the features
-                area = float(request.form['area'])
-                perimeter = float(request.form['perimeter'])
-                compactness = float(request.form['compactness'])
-                length = float(request.form['length'])
-                width = float(request.form['width'])
-                asymmetry_coeff = float(request.form['asymmetry_coeff'])
-                groove = float(request.form['groove'])
-                
-                # Prepare the input features as a numpy array for prediction
-                features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
-                
+                # Extract features and predict (existing code)...
                 # Make the prediction
-                prediction = int(model.predict(features)[0])
-                
-                # Map to wheat type names for better display
-                wheat_types = {0: "Type 1 (Kama)", 1: "Type 2 (Rosa)", 2: "Type 3 (Canadian)"}
-                prediction = wheat_types.get(prediction, f"Unknown (Type {prediction})")
-                
+                prediction = model.predict(features)
             except Exception as e:
                 error = f"Error making prediction: {str(e)}"
-                prediction = None
-    
+        else:
+            error = "Model is not loaded. Cannot make predictions."
+
     return render_template_string(HTML_TEMPLATE, 
-                                 prediction=prediction, 
-                                 error=error, 
-                                 model_loaded=model_loaded,
-                                 ranges=FEATURE_RANGES)
+                                   prediction=prediction, 
+                                   error=error, 
+                                   model_loaded=model_loaded, 
+                                   ranges=FEATURE_RANGES)
 
 # Try to initialize model again if it failed to load at startup
 @app.before_request

@@ -2,12 +2,14 @@ import pickle
 from flask import Flask, request, jsonify, render_template
 import numpy as np
 import os
+from sklearn.linear_model import RidgeClassifier
+
 
 # Load the trained model
 def load_model():
     try:
-        with open('seed_type_classification.pkl', 'rb') as model_file:
-            model = pickle.load(model_file)
+        with open('seed_type_classification.pkl', 'wb') as f:
+            pickle.dump(model, f)
             return model
     except pickle.UnpicklingError as e:
         print(f"Error unpickling the model: {e}")
@@ -19,18 +21,21 @@ model = load_model()
 
 # Function to get input from the user
 def get_input():
-    print("Enter the following features to predict the wheat type:")
+    print("Using the following sample input for prediction:")
 
-    area = float(input("Area: "))
-    perimeter = float(input("Perimeter: "))
-    compactness = float(input("Compactness: "))
-    length = float(input("Length: "))
-    width = float(input("Width: "))
-    asymmetry_coeff = float(input("Asymmetry Coefficient: "))
-    groove = float(input("Groove: "))
+    # Hardcoded values for testing
+    area = 15.5
+    perimeter = 14.3
+    compactness = 0.8
+    length = 7.1
+    width = 3.5
+    asymmetry_coeff = 2.1
+    groove = 5.0
+
+    print(f"Area: {area}, Perimeter: {perimeter}, Length: {length}, etc.")
 
     return np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
-
+    
 # Function to make prediction
 def predict(features):
     prediction = model.predict(features)

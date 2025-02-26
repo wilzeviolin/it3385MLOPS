@@ -7,10 +7,14 @@ app = Flask(__name__)
 
 # Load the trained model
 def load_model():
-    # Assuming the model is stored in the same directory as the app
-    with open("seed_type_classification.pkl", "rb") as model_file:
-        model = pickle.load(model_file)
-    return model
+    try:
+        with open('seed_pipline.pkl', 'rb') as model_file:
+            model = pickle.load(model_file)
+            return model
+    except pickle.UnpicklingError as e:
+        print(f"Error unpickling the model: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 # Load the model once when the app starts
 model = load_model()

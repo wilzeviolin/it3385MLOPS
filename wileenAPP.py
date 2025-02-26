@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Load the trained model
 def load_model():
     try:
-        with open('seed_pipline.pkl', 'rb') as model_file:
+        with open('seed_type_classification.pkl', 'rb') as model_file:
             model = pickle.load(model_file)
             return model
     except pickle.UnpicklingError as e:

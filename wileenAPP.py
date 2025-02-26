@@ -1,10 +1,7 @@
 import pickle
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import numpy as np
 import os
-
-# Initialize Flask app
-app = Flask(__name__)
 
 # Load the trained model
 def load_model():
@@ -20,34 +17,29 @@ def load_model():
 # Load the model once when the app starts
 model = load_model()
 
-@app.route('/')
-def home():
-    return "Wheat Type Classifier API is Running!"
+# Function to get input from the user
+def get_input():
+    print("Enter the following features to predict the wheat type:")
 
-# Define a route for prediction
-@app.route('/predict', methods=['POST'])
-def predict():
-    # Get input features from the request
-    data = request.get_json(force=True)
-    
-    # Extract the features
-    area = data['Area']
-    perimeter = data['Perimeter']
-    compactness = data['Compactness']
-    length = data['Length']
-    width = data['Width']
-    asymmetry_coeff = data['AsymmetryCoeff']
-    groove = data['Groove']
-    
-    # Prepare the input features as a numpy array for prediction
-    features = np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
-    
-    # Make the prediction
+    area = float(input("Area: "))
+    perimeter = float(input("Perimeter: "))
+    compactness = float(input("Compactness: "))
+    length = float(input("Length: "))
+    width = float(input("Width: "))
+    asymmetry_coeff = float(input("Asymmetry Coefficient: "))
+    groove = float(input("Groove: "))
+
+    return np.array([[area, perimeter, compactness, length, width, asymmetry_coeff, groove]])
+
+# Function to make prediction
+def predict(features):
     prediction = model.predict(features)
-    
-    # Return the prediction as a response
-    return jsonify({"predicted_wheat_type": int(prediction[0])})
+    print(f"Predicted Wheat Type: {int(prediction[0])}")
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if not provided
-    app.run(host='0.0.0.0', port=port)
+    while True:
+        features = get_input()  # Get features from user
+        predict(features)       # Make prediction
+        cont = input("Do you want to make another prediction? (y/n): ")
+        if cont.lower() != 'y':
+            break

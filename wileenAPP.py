@@ -180,52 +180,55 @@ HTML_TEMPLATE = '''
 <body>
     <h1>Wheat Type Classifier</h1>
 
-    <div class="model-status {{ 'status-ok' if model_loaded else 'status-error' }}">
-        Model Status: {{ 'Loaded Successfully' if model_loaded else 'Error Loading Model' }}
-    </div>
-
     <div class="container">
         <form action="/" method="post">
             <div class="form-group">
                 <label for="area">Area:</label>
                 <input type="number" id="area" name="area" step="1" required 
                        value="{{ request.form.get('area', '') }}">
+                <div class="range-info">Suggested range: 10 to 200</div> <!-- Rough range based on previous data -->
             </div>
 
             <div class="form-group">
                 <label for="perimeter">Perimeter:</label>
                 <input type="number" id="perimeter" name="perimeter" step="1" required 
                        value="{{ request.form.get('perimeter', '') }}">
+                <div class="range-info">Suggested range: 30 to 100</div> <!-- Rough range based on previous data -->
             </div>
 
             <div class="form-group">
                 <label for="compactness">Compactness:</label>
                 <input type="number" id="compactness" name="compactness" step="1" required 
                        value="{{ request.form.get('compactness', '') }}">
+                <div class="range-info">Suggested range: 0 to 1</div> <!-- Rough range based on previous data -->
             </div>
 
             <div class="form-group">
                 <label for="length">Length:</label>
                 <input type="number" id="length" name="length" step="1" required 
                        value="{{ request.form.get('length', '') }}">
+                <div class="range-info">Suggested range: 4 to 8</div> <!-- Rough range based on previous data -->
             </div>
 
             <div class="form-group">
                 <label for="width">Width:</label>
                 <input type="number" id="width" name="width" step="1" required 
                        value="{{ request.form.get('width', '') }}">
+                <div class="range-info">Suggested range: 2 to 5</div> <!-- Rough range based on previous data -->
             </div>
 
             <div class="form-group">
                 <label for="asymmetry_coeff">Asymmetry Coefficient:</label>
                 <input type="number" id="asymmetry_coeff" name="asymmetry_coeff" step="1" required 
                        value="{{ request.form.get('asymmetry_coeff', '') }}">
+                <div class="range-info">Suggested range: 2 to 6</div> <!-- Rough range based on previous data -->
             </div>
 
             <div class="form-group">
                 <label for="groove">Groove:</label>
                 <input type="number" id="groove" name="groove" step="1" required 
                        value="{{ request.form.get('groove', '') }}">
+                <div class="range-info">Suggested range: 3 to 10</div> <!-- Rough range based on previous data -->
             </div>
 
             <button type="submit" {{ 'disabled' if not model_loaded else '' }}>
@@ -250,12 +253,18 @@ HTML_TEMPLATE = '''
 
         <div class="wheat-types">
             <h3>Wheat Type Reference:</h3>
-            <p><strong>Type 1:</strong> Kama wheat</p>
-            <p><strong>Type 2:</strong> Rosa wheat</p>
-            <p><strong>Type 3:</strong> Canadian wheat</p>
+            <p><strong>Type 1: Kama wheat</strong></p>
+            <p>Kama wheat is typically grown in temperate climates and is known for its high protein content and excellent baking quality. It is commonly used in making bread and other baked goods.</p>
+            
+            <p><strong>Type 2: Rosa wheat</strong></p>
+            <p>Rosa wheat is characterized by its lighter color and high yield. It is often used for making pastries and cakes due to its delicate texture.</p>
+
+            <p><strong>Type 3: Canadian wheat</strong></p>
+            <p>Canadian wheat is widely recognized for its strong gluten content, making it ideal for bread and pasta production. It is highly valued for its versatility and high milling yield.</p>
         </div>
     </div>
 </body>
+
 
 
 </html>

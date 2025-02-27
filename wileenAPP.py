@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 import os
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, send_from_directory
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -82,54 +82,50 @@ FEATURE_RANGES = {
     'groove': {'min': 4.519, 'max': 6.55}
 }
 
-@app.route('/', methods=['GET', 'POST'])
-def home():
+@app.route('/', methods=['GET'])
+def home_page():
+    # Serve the HTML file directly
+    return send_from_directory(os.getcwd(), 'wheat.html')
+
+@app.route('/process', methods=['POST'])
+def process_form():
     prediction = None
     error = None
     model_loaded = model is not None
 
     if not model_loaded:
-        error = "Model is not loaded. Check server logs for more details."
+        return jsonify({"error": "Model is not loaded. Check server logs for more details."})
 
-    if request.method == 'POST':
-        if model_loaded:
-            try:
-                # Extract features from form data
-                area = float(request.form['area'])
-                perimeter = float(request.form['perimeter'])
-                compactness = float(request.form['compactness'])
-                length = float(request.form['length'])
-                width = float(request.form['width'])
-                asymmetry_coeff = float(request.form['asymmetry_coeff'])
-                groove = float(request.form['groove'])
-                
-                # Calculate the length-width ratio that the model expects
-                length_width_ratio = length / width if width != 0 else 0
-                
-                # Create a pandas DataFrame with the expected column names
-                features_df = pd.DataFrame({
-                    'Area': [area],
-                    'Perimeter': [perimeter], 
-                    'Compactness': [compactness], 
-                    'Length': [length], 
-                    'Width': [width], 
-                    'AsymmetryCoeff': [asymmetry_coeff], 
-                    'Groove': [groove],
-                    'Length_Width_Ratio': [length_width_ratio]
-                })
-                
-                # Make the prediction using the DataFrame
-                prediction = int(model.predict(features_df)[0])
-            except Exception as e:
-                error = f"Error making prediction: {str(e)}"
-        else:
-            error = "Model is not loaded. Cannot make predictions."
-
-    return render_template('wheat.html', 
-                           prediction=prediction, 
-                           error=error, 
-                           model_loaded=model_loaded, 
-                           ranges=FEATURE_RANGES)
+    try:
+        # Extract features from form data
+        area = float(request.form['area'])
+        perimeter = float(request.form['perimeter'])
+        compactness = float(request.form['compactness'])
+        length = float(request.form['length'])
+        width = float(request.form['width'])
+        asymmetry_coeff = float(request.form['asymmetry_coeff'])
+        groove = float(request.form['groove'])
+        
+        # Calculate the length-width ratio that the model expects
+        length_width_ratio = length / width if width != 0 else 0
+        
+        # Create a pandas DataFrame with the expected column names
+        features_df = pd.DataFrame({
+            'Area': [area],
+            'Perimeter': [perimeter], 
+            'Compactness': [compactness], 
+            'Length': [length], 
+            'Width': [width], 
+            'AsymmetryCoeff': [asymmetry_coeff], 
+            'Groove': [groove],
+            'Length_Width_Ratio': [length_width_ratio]
+        })
+        
+        # Make the prediction using the DataFrame
+        prediction = int(model.predict(features_df)[0])
+        return jsonify({"prediction": prediction, "ranges": FEATURE_RANGES})
+    except Exception as e:
+        return jsonify({"error": f"Error making prediction: {str(e)}"})
 
 # Try to initialize model again if it failed to load at startup
 @app.before_request

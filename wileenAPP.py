@@ -1,7 +1,8 @@
 import pickle
 import numpy as np
 import os
-from flask import Flask, request, jsonify, render_template_string
+import pandas as pd
+from flask import Flask, request, jsonify, render_template
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -9,7 +10,6 @@ app = Flask(__name__)
 # Print environment information for debugging
 print(f"Current working directory: {os.getcwd()}")
 print(f"Files in current directory: {os.listdir(os.getcwd())}")
-
 
 # Load the trained model
 def load_model():
@@ -82,194 +82,6 @@ FEATURE_RANGES = {
     'groove': {'min': 4.519, 'max': 6.55}
 }
 
-# HTML template with CSS included
-HTML_TEMPLATE = '''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Wheat Type Classifier</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #336699;
-            text-align: center;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .range-info {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e9f7ef;
-            border-radius: 4px;
-            display: {{ 'block' if prediction is not none else 'none' }};
-        }
-        .error {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #ffdddd;
-            border-radius: 4px;
-            display: {{ 'block' if error else 'none' }};
-        }
-        .wheat-types {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            border-left: 4px solid #336699;
-        }
-        .model-status {
-            text-align: center;
-            padding: 8px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .status-ok {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .status-error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
-</head>
-<body>
-    <h1>Wheat Type Classifier</h1>
-
-    <div class="container">
-        <form action="/" method="post">
-            <div class="form-group">
-                <label for="area">Area:</label>
-                <input type="number" id="area" name="area" step="1" required 
-                       value="{{ request.form.get('area', '') }}">
-                <div class="range-info">Suggested range: 10 to 200</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <div class="form-group">
-                <label for="perimeter">Perimeter:</label>
-                <input type="number" id="perimeter" name="perimeter" step="1" required 
-                       value="{{ request.form.get('perimeter', '') }}">
-                <div class="range-info">Suggested range: 30 to 100</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <div class="form-group">
-                <label for="compactness">Compactness:</label>
-                <input type="number" id="compactness" name="compactness" step="1" required 
-                       value="{{ request.form.get('compactness', '') }}">
-                <div class="range-info">Suggested range: 0 to 1</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <div class="form-group">
-                <label for="length">Length:</label>
-                <input type="number" id="length" name="length" step="1" required 
-                       value="{{ request.form.get('length', '') }}">
-                <div class="range-info">Suggested range: 4 to 8</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <div class="form-group">
-                <label for="width">Width:</label>
-                <input type="number" id="width" name="width" step="1" required 
-                       value="{{ request.form.get('width', '') }}">
-                <div class="range-info">Suggested range: 2 to 5</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <div class="form-group">
-                <label for="asymmetry_coeff">Asymmetry Coefficient:</label>
-                <input type="number" id="asymmetry_coeff" name="asymmetry_coeff" step="1" required 
-                       value="{{ request.form.get('asymmetry_coeff', '') }}">
-                <div class="range-info">Suggested range: 2 to 6</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <div class="form-group">
-                <label for="groove">Groove:</label>
-                <input type="number" id="groove" name="groove" step="1" required 
-                       value="{{ request.form.get('groove', '') }}">
-                <div class="range-info">Suggested range: 3 to 10</div> <!-- Rough range based on previous data -->
-            </div>
-
-            <button type="submit" {{ 'disabled' if not model_loaded else '' }}>
-                {{ 'Model Not Loaded - Please Fix' if not model_loaded else 'Predict Wheat Type' }}
-            </button>
-        </form>
-
-        {% if prediction %}
-        <div class="result">
-            <h3>Prediction Result:</h3>
-            <p><strong>Predicted Wheat Type: {{ prediction }}</strong></p>
-        </div>
-        {% endif %}
-
-        {% if error %}
-        <div class="error">
-            <h3>Error:</h3>
-            <p>{{ error }}</p>
-            <p>Ensure the model file 'seed_type_classification.pkl' exists in the application directory.</p>
-        </div>
-        {% endif %}
-
-        <div class="wheat-types">
-            <h3>Wheat Type Reference:</h3>
-            <p><strong>Type 1: Kama wheat</strong></p>
-            <p>Kama wheat is typically grown in temperate climates and is known for its high protein content and excellent baking quality. It is commonly used in making bread and other baked goods.</p>
-            
-            <p><strong>Type 2: Rosa wheat</strong></p>
-            <p>Rosa wheat is characterized by its lighter color and high yield. It is often used for making pastries and cakes due to its delicate texture.</p>
-
-            <p><strong>Type 3: Canadian wheat</strong></p>
-            <p>Canadian wheat is widely recognized for its strong gluten content, making it ideal for bread and pasta production. It is highly valued for its versatility and high milling yield.</p>
-        </div>
-    </div>
-</body>
-
-
-
-</html>
-'''
-
 @app.route('/', methods=['GET', 'POST'])
 def home():
     prediction = None
@@ -295,7 +107,6 @@ def home():
                 length_width_ratio = length / width if width != 0 else 0
                 
                 # Create a pandas DataFrame with the expected column names
-                import pandas as pd
                 features_df = pd.DataFrame({
                     'Area': [area],
                     'Perimeter': [perimeter], 
@@ -314,11 +125,11 @@ def home():
         else:
             error = "Model is not loaded. Cannot make predictions."
 
-    return render_template_string(HTML_TEMPLATE, 
-                                  prediction=prediction, 
-                                  error=error, 
-                                  model_loaded=model_loaded, 
-                                  ranges=FEATURE_RANGES)
+    return render_template('index.html', 
+                           prediction=prediction, 
+                           error=error, 
+                           model_loaded=model_loaded, 
+                           ranges=FEATURE_RANGES)
 
 # Try to initialize model again if it failed to load at startup
 @app.before_request
@@ -350,7 +161,6 @@ def predict():
         length_width_ratio = length / width if width != 0 else 0
         
         # Create DataFrame with proper column names
-        import pandas as pd
         features_df = pd.DataFrame({
             'Area': [area],
             'Perimeter': [perimeter], 
@@ -370,6 +180,11 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)  # Ensure port matches Render's config
-
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 10000))  # Try a different port if 5000 is blocked
+    print(f"Model loaded: {model is not None}")
+    if model is None:
+        print("WARNING: Model failed to load. Check if model files exist.")
+    else:
+        print(f"Starting Flask app on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=False)

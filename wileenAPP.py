@@ -125,7 +125,7 @@ def home():
         else:
             error = "Model is not loaded. Cannot make predictions."
 
-    return render_template('index.html', 
+    return render_template('wheat.html', 
                            prediction=prediction, 
                            error=error, 
                            model_loaded=model_loaded, 

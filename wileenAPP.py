@@ -10,7 +10,7 @@ app = Flask(__name__)
 print(f"Current working directory: {os.getcwd()}")
 print(f"Files in current directory: {os.listdir(os.getcwd())}")
 
-# Load the trained model
+
 # Load the trained model
 def load_model():
     try:

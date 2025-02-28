@@ -110,33 +110,11 @@ def process_form():
             'Length_Width_Ratio': [length_width_ratio]
         })
         
-        # Try to get prediction probabilities if the model supports it
-        confidence = None
-        try:
-            # Make the prediction using the DataFrame
-            prediction = int(model.predict(features_df)[0])
+        # Make the prediction using the DataFrame
+        prediction = int(model.predict(features_df)[0])
             
-            # Try to get prediction probabilities (will work with most sklearn models)
-            if hasattr(model, 'predict_proba'):
-                probas = model.predict_proba(features_df)[0]
-                # Get the confidence score for the predicted class
-                confidence = round(probas[prediction-1] * 100, 1)  # Adjusting for 1-indexed classes
-            elif hasattr(model, 'named_steps') and hasattr(model.named_steps.get('classifier', None), 'predict_proba'):
-                # For pipelines with a classifier
-                probas = model.named_steps['classifier'].predict_proba(
-                    model.named_steps['scaler'].transform(features_df) if 'scaler' in model.named_steps else features_df
-                )[0]
-                confidence = round(probas[prediction-1] * 100, 1)
-        except Exception as prob_error:
-            print(f"Error getting probabilities: {prob_error}")
-            # If we can't get confidence, just provide the prediction
-            pass
-        
-        response = {"prediction": prediction}
-        if confidence is not None:
-            response["confidence"] = confidence
-            
-        return jsonify(response)
+        # Return only the prediction without confidence
+        return jsonify({"prediction": prediction})
     except Exception as e:
         return jsonify({"error": f"Error making prediction: {str(e)}"})
 
@@ -184,26 +162,8 @@ def predict():
         # Make the prediction
         prediction = int(model.predict(features_df)[0])
         
-        # Try to get confidence scores
-        confidence = None
-        try:
-            if hasattr(model, 'predict_proba'):
-                probas = model.predict_proba(features_df)[0]
-                confidence = round(probas[prediction-1] * 100, 1)
-            elif hasattr(model, 'named_steps') and hasattr(model.named_steps.get('classifier', None), 'predict_proba'):
-                probas = model.named_steps['classifier'].predict_proba(
-                    model.named_steps['scaler'].transform(features_df) if 'scaler' in model.named_steps else features_df
-                )[0]
-                confidence = round(probas[prediction-1] * 100, 1)
-        except Exception as prob_error:
-            print(f"Error getting probabilities: {prob_error}")
-        
-        # Return the prediction as a response
-        response = {"predicted_wheat_type": prediction}
-        if confidence is not None:
-            response["confidence"] = confidence
-            
-        return jsonify(response)
+        # Return only the prediction without confidence
+        return jsonify({"predicted_wheat_type": prediction})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

@@ -5,7 +5,7 @@ import pandas as pd
 from flask import Flask, request, jsonify, send_from_directory, render_template
 
 # Initialize Flask app
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='templates')
 
 # Print environment information for debugging
 print(f"Current working directory: {os.getcwd()}")

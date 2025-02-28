@@ -2,7 +2,7 @@ from flask import Flask
 from wileenAPP import app as wileen_app
 from app import app as second_app
 
-main_app = Flask(__name__)
+main_app = Flask(__name__,template_folder='templates')
 
 # Register Blueprints
 main_app.register_blueprint(wileen_app, url_prefix='/wheat')

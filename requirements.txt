@@ -1,10 +1,5 @@
-Flask>=2.3.2
-Werkzeug>=3.0.0
-pandas==1.5.3
-pycaret==3.0.0
-gunicorn==20.1.0
-scikit-learn==1.3.2
-scipy==1.10.1
-joblib==1.2.0
-numpy>=1.21,<1.26
-sktime==0.26.0
+flask
+pandas
+scikit-learn
+gunicorn
+pycaret

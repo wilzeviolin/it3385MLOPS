@@ -2,10 +2,10 @@ import pickle
 import numpy as np
 import os
 import pandas as pd
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 
 # Print environment information for debugging
 print(f"Current working directory: {os.getcwd()}")
@@ -14,22 +14,16 @@ print(f"Files in current directory: {os.listdir(os.getcwd())}")
 # Load the trained model
 def load_model():
     try:
-        # Check multiple possible locations for the model files
+        # Check for model files in the artifacts directory
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        artifacts_dir = os.path.join(project_root, 'artifacts')
         model_filenames = ['seed_pipeline.pkl', 'seed_type_classification.pkl']
         possible_locations = []
         
+        # Build list of possible file locations
         for filename in model_filenames:
-            # Simple relative path (most likely on Render)
-            possible_locations.append(filename)
-            
-            # Current working directory
-            possible_locations.append(os.path.join(os.getcwd(), filename))
-            
-            # Script directory
-            possible_locations.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), filename))
-            
-            # Parent directory
-            possible_locations.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), filename))
+            # Artifacts directory
+            possible_locations.append(os.path.join(artifacts_dir, filename))
         
         for location in possible_locations:
             print(f"Checking for model at: {location}")
@@ -73,8 +67,8 @@ model = load_model()
 
 @app.route('/', methods=['GET'])
 def home_page():
-    # Serve the HTML file directly
-    return send_from_directory(os.getcwd(), 'wheat.html')
+    # Use Flask's render_template to serve the HTML file from templates directory
+    return render_template('wheat.html')
 
 @app.route('/process', methods=['POST'])
 def process_form():

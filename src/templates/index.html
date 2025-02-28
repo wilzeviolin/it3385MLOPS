@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: 50px auto; text-align: center; }
+        input { width: 80%; padding: 10px; margin: 5px; }
+        button { padding: 10px 20px; background-color: blue; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Enter House Details for Prediction</h2>
+        <form id="predictForm">
+            <label>Number of Rooms:</label><br>
+            <input type="number" id="rooms" required><br>
+
+            <label>Distance to CBD (km):</label><br>
+            <input type="text" id="distance" required><br>
+
+            <label>Land Size (sq ft):</label><br>
+            <input type="number" id="landsize" required><br>
+
+            <label>Building Area (sq ft):</label><br>
+            <input type="number" id="buildingArea" required><br>
+
+            <label>Year Built:</label><br>
+            <input type="number" id="yearBuilt" required><br>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <h3 id="predictionResult"></h3>
+    </div>
+
+    <script>
+        document.getElementById("predictForm").onsubmit = async function(event) {
+            event.preventDefault();
+            
+            let formData = {
+                Rooms: parseInt(document.getElementById("rooms").value),
+                Distance: parseFloat(document.getElementById("distance").value),
+                Landsize: parseFloat(document.getElementById("landsize").value),
+                BuildingArea: parseFloat(document.getElementById("buildingArea").value),
+                YearBuilt: parseInt(document.getElementById("yearBuilt").value)
+            };
+
+            let response = await fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+
+            let result = await response.json();
+            document.getElementById("predictionResult").innerText = 
+                result.prediction ? "Predicted Price: $" + result.prediction[0] : "Error: " + result.error;
+        };
+    </script>
+</body>
+</html>

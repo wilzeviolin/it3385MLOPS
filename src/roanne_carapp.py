@@ -33,7 +33,7 @@ except Exception:
 
 # Create encoders for categorical variables
 categorical_columns = ["Brand_Model", "Location", "Fuel_Type", "Transmission", "Owner_Type"]
-encoders = {col: OneHotEncoder(sparse=False, handle_unknown='ignore') for col in categorical_columns}
+encoders = {col: OneHotEncoder(sparse_output=False, handle_unknown='ignore') for col in categorical_columns}
 
 # Define some common values for each categorical column
 common_values = {

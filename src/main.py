@@ -10,7 +10,7 @@ main_app = Flask(__name__, template_folder='../templates')
 
 @main_app.route('/')
 def home():
-    return "Welcome to the Merged Flask App 🔥"
+    return render_template('home.html')
 
 @main_app.route('/wheat')
 def wheat():

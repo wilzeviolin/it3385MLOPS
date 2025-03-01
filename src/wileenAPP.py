@@ -104,7 +104,7 @@ def check():
         "status": "Wheat app is working",
         "model_loaded": model is not None
     })
-if name == 'main':
+if __name__ == 'main':
     port = int(os.environ.get("PORT", 10000))
     print(f"Starting Wheat Flask app on port {port}")
     wileen_app.run(host='0.0.0.0', port=port, debug=True)

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merged Flask App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .btn-custom {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn-custom:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4">Welcome to the Merged Flask App 🔥</h1>
+    <p class="mb-4">Choose an app to proceed:</p>
+    <div class="d-flex justify-content-center gap-4">
+        <a href="/wheat" class="btn btn-primary btn-custom">Go to Wileen App 🌾</a>
+        <a href="/car" class="btn btn-success btn-custom">Go to Roanne Car App 🚗</a>
+    </div>
+</div>
+</body>
+</html>

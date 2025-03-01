@@ -132,6 +132,17 @@ def predict_direct():
         print(traceback.format_exc())
         return jsonify({"error": f"Prediction error: {str(e)}"})
 
+# Add this route to handle direct /process requests for wheat
+@main_app.route('/process', methods=['POST'])
+def process_direct():
+    try:
+        print("Direct process route called - redirecting to wheat_process")
+        return wheat_process()
+    except Exception as e:
+        print(f"Error in direct process route: {e}")
+        print(traceback.format_exc())
+        return jsonify({"error": f"Wheat processing error: {str(e)}"})
+
 # Add a diagnostic route
 @main_app.route('/debug')
 def debug():
@@ -187,7 +198,7 @@ def test_form():
 # Add an error handler for 404 errors that returns JSON instead of HTML
 @main_app.errorhandler(404)
 def not_found_error(error):
-    return jsonify({"error": "Endpoint not found. Available endpoints include /car/predict and /wheat/process"}), 404
+    return jsonify({"error": "Endpoint not found. Available endpoints include /car/predict, /wheat/process, /predict, and /process"}), 404
 
 if __name__ == '__main__':
     # Print debug info at startup

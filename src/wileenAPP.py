@@ -11,14 +11,23 @@ wileen_app = Flask(__name__, template_folder='../templates')  # Correctly initia
 def home():
     return "Wileen App Home"
 
-# Load the trained model
 def load_model():
     try:
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Use absolute path with __file__ to find the model
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(current_dir)
         model_path = os.path.join(project_root, 'artifacts', 'seed_pipeline.pkl')
+        
+        print(f"Attempting to load model from: {model_path}")
+        
         if os.path.exists(model_path):
             with open(model_path, 'rb') as model_file:
-                return pickle.load(model_file)
+                model = pickle.load(model_file)
+                print("Model loaded successfully")
+                return model
+        else:
+            print(f"Model file not found at {model_path}")
+            return None
     except Exception as e:
         print(f"Error loading model: {e}")
         return None
@@ -70,5 +79,5 @@ def check_model():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     print(f"Starting Flask app on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    wileen_app.run(host='0.0.0.0', port=port, debug=False)
 

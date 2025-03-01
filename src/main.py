@@ -1,10 +1,9 @@
 from flask import Flask
-from wileenAPP import wileen_app
-from roanne_carapp import roanne_app
+from src.wileenAPP import wileen_app  # ✅ FIXED IMPORT
+from src.roanne_carapp import roanne_app  # ✅ FIXED IMPORT
 
 main_app = Flask(__name__, template_folder='../templates')
 
-# Register Wileen Routes
 @main_app.route('/')
 def home():
     return "Welcome to the Merged Flask App 🔥"
@@ -17,7 +16,6 @@ def wheat():
 def wheat_process():
     return wileen_app.view_functions['process_form']()
 
-# Register Roanne Routes
 @main_app.route('/car')
 def car():
     return roanne_app.view_functions['car_page']()

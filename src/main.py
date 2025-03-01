@@ -1,6 +1,10 @@
 from flask import Flask
-from src.wileenAPP import wileen_app  # ✅ FIXED IMPORT
-from src.roanne_carapp import roanne_app  # ✅ FIXED IMPORT
+from src.wileenAPP import wileen_app  
+from src.roanne_carapp import roanne_app  
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
 
 main_app = Flask(__name__, template_folder='../templates')
 

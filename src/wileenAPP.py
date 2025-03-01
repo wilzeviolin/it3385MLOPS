@@ -16,7 +16,7 @@ def custom_load_model(file_path):
         print(f"Error loading model: {e}")
         return None
 
-# Load the trained model
+# Load Model
 def load_model():
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,9 +25,13 @@ def load_model():
 
         print(f"Loading model from: {model_path}")
         if os.path.exists(model_path):
-            loaded_model = custom_load_model(model_path)
-            print("Model loaded successfully")
-            return loaded_model
+            model = custom_load_model(model_path)
+            if model:
+                print("Model loaded successfully")
+                return model
+            else:
+                print("Model couldn't be loaded")
+                return None
         else:
             print("Model file not found")
             return None
@@ -37,7 +41,13 @@ def load_model():
         print(traceback.format_exc())
         return None
 
-model = load_model()
+# Before every request — Check Model
+@wileen_app.before_request
+def check_model():
+    global model
+    if model is None:
+        print("Re-loading model before request...")
+        model = load_model()
 
 @wileen_app.route('/')
 def home_page():
@@ -45,7 +55,7 @@ def home_page():
 
 @wileen_app.route('/process', methods=['POST'])
 def process_form():
-    print("Processing wheat form...")
+    print("Processing Wheat Form...")
 
     if model is None:
         return jsonify({"error": "Model not loaded"})
@@ -72,8 +82,11 @@ def process_form():
             'Length_Width_Ratio': [length_width_ratio]
         })
 
+        print(f"Features: {features_df}")
+
         prediction = int(model.predict(features_df)[0])
         print(f"Prediction: {prediction}")
+
         return jsonify({"prediction": prediction})
 
     except Exception as e:
@@ -83,7 +96,7 @@ def process_form():
 @wileen_app.route('/check')
 def check():
     return jsonify({
-        "status": "Wheat app is running",
+        "status": "Wheat App Running",
         "model_loaded": model is not None
     })
 

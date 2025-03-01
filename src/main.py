@@ -104,10 +104,8 @@ def not_found_error(error):
     return jsonify({"error": "Endpoint not found. Available endpoints include /car/predict, /wheat/process, /predict, and /process"}), 404
 
 if __name__ == '__main__':
-    # Print basic startup info
-    print(f"Starting main Flask app on port 5000")
-    print(f"Available routes:")
-    for rule in main_app.url_map.iter_rules():
-        print(f"- {rule.rule}")
-    
-    main_app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 10000))  # Render uses PORT environment variable
+    print(f"Starting server on port {port}...")
+    main_app.run(host='0.0.0.0', port=port, debug=False)
+
+

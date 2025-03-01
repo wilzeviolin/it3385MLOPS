@@ -15,8 +15,6 @@ def load_model():
         project_root = os.path.dirname(current_dir)
         model_path = os.path.join(project_root, 'artifacts', 'seed_pipeline.pkl')
         
-        print(f"Attempting to load wheat model from: {model_path}")
-        
         if os.path.exists(model_path):
             with open(model_path, 'rb') as model_file:
                 loaded_model = pickle.load(model_file)
@@ -33,7 +31,6 @@ def load_model():
             return DummyModel()
     except Exception as e:
         print(f"Error loading wheat model: {e}")
-        print(traceback.format_exc())
         return None
 
 # Load model at startup
@@ -45,19 +42,15 @@ def home_page():
 
 @wileen_app.route('/process', methods=['POST'])
 def process_form():
-    print("Wheat process_form called")
-    
     global model
     if model is None:
         model = load_model()
     
     if model is None:
-        print("Wheat model is still None after loading attempt")
         return jsonify({"error": "Model not loaded"})
     
     try:
-        print(f"Wheat form data: {request.form}")
-        
+        # Extract form data
         area = float(request.form['area'])
         perimeter = float(request.form['perimeter'])
         compactness = float(request.form['compactness'])
@@ -79,20 +72,16 @@ def process_form():
             'Length_Width_Ratio': [length_width_ratio]
         })
         
-        print(f"Wheat features dataframe created: {features_df}")
-        
         try:
+            # Use model for prediction
             prediction = int(model.predict(features_df)[0])
-            print(f"Wheat prediction: {prediction}")
             return jsonify({"prediction": prediction})
         except Exception as predict_error:
             print(f"Error during wheat prediction: {predict_error}")
-            print(traceback.format_exc())
             return jsonify({"error": f"Prediction error: {str(predict_error)}"})
     
     except Exception as e:
         print(f"Error processing wheat form: {e}")
-        print(traceback.format_exc())
         return jsonify({"error": str(e)})
 
 @wileen_app.before_request

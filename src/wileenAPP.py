@@ -26,11 +26,11 @@ def load_model():
 # Load model at startup
 model = load_model()
 
-@app.route('/', methods=['GET'])
+@wileen_app.route('/', methods=['GET'])
 def home_page():
     return render_template('wheat.html')
 
-@app.route('/process', methods=['POST'])
+@wileen_app.route('/process', methods=['POST'])
 def process_form():
     if model is None:
         return jsonify({"error": "Model not loaded"})
@@ -61,7 +61,7 @@ def process_form():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-@app.before_request
+@wileen_app.before_request
 def check_model():
     global model
     if model is None:
@@ -72,4 +72,3 @@ if __name__ == '__main__':
     print(f"Starting Flask app on port {port}")
     app.run(host='0.0.0.0', port=port, debug=False)
 
-app=app

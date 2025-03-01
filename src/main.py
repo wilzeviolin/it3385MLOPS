@@ -1,12 +1,12 @@
 from flask import Flask
-from wileenAPP import app as wileen_app
-from app import app as second_app
+from wileenAPP import wileen_app
+from roanne_carapp import roanne_app
 
-main_app = Flask(__name__,template_folder='templates')
+main_app = Flask(__name__, template_folder='../templates')
 
 # Register Blueprints
 main_app.register_blueprint(wileen_app, url_prefix='/wheat')
-main_app.register_blueprint(second_app, url_prefix='/another')
+main_app.register_blueprint(roanne_app, url_prefix='/car')
 
 @main_app.route('/')
 def home():

@@ -5,7 +5,10 @@ import os
 import pandas as pd
 from flask import Flask, request, jsonify, render_template
 import traceback
-wileen_app = Flask(name, template_folder='../templates')
+
+wileen_app = Flask(__name__, template_folder='../templates')
+
+
 # Load the trained model
 def load_model():
     try:

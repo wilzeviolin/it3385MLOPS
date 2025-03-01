@@ -1,6 +1,6 @@
 from flask import Flask
-from src.wileenAPP import wileen_app  
-from src.roanne_carapp import roanne_app  
+from wileenAPP import wileen_app
+from roanne_carapp import roanne_app
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))

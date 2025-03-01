@@ -16,23 +16,27 @@ def home():
 # Ensure joblib does not cache to restricted directories
 os.environ["JOBLIB_TEMP_FOLDER"] = "/tmp"
 
-# Load model
+
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+model_path_pkl = os.path.join(project_root, "artifacts", "used_car_price_model.pkl")
+model_path_joblib = os.path.join(project_root, "artifacts", "used_car_price_model.joblib")
+
+# Try loading the model
 try:
-    # Load model using joblib
-    model = joblib.load("artifacts/used_car_price_model.joblib")
-    print("Model loaded successfully")
+    if os.path.exists(model_path_joblib):
+        model = joblib.load(model_path_joblib)
+        print("Model loaded successfully from joblib")
+    elif os.path.exists(model_path_pkl):
+        with open(model_path_pkl, 'rb') as f:
+            model = pickle.load(f)
+        print("Model loaded successfully from pickle")
+    else:
+        raise FileNotFoundError("Model file not found in artifacts/")
 except Exception as e:
     print(f"Model loading failed: {e}")
-    # Try loading with pickle as fallback
-    try:
-        with open("artifacts/used_car_price_model.pkl", 'rb') as f:
-            model = pickle.load(f)
-        print("Model loaded with pickle successfully")
-    except Exception as e2:
-        print(f"Pickle loading failed: {e2}")
-        # Last resort - try loading from different location
-        model = joblib.load("used_car_price_model.pkl")
-        print("Model loaded from root directory")
+    model = None  # Set to None if loading fails
+
 
 # Create encoders for categorical variables
 categorical_columns = ["Brand_Model", "Location", "Fuel_Type", "Transmission", "Owner_Type"]
@@ -140,6 +144,6 @@ def predict():
         return jsonify({"error": str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    roanne_app.run(debug=True)
 
 

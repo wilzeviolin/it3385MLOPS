@@ -57,6 +57,12 @@ def home_page():
 def process_form():
     print("Processing Wheat Form...")
 
+    global model  # Add this line to access the global model
+
+    if model is None:
+        print("Model is not loaded, attempting to reload...")
+        model = load_model()
+    
     if model is None:
         return jsonify({"error": "Model not loaded"})
 

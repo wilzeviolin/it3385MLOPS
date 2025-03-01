@@ -1,10 +1,13 @@
 from flask import Flask, render_template
-from wileenAPP import wileen_app
-from roanne_carapp import roanne_app
 import sys
 import os
+
+# Add parent directory to path to ensure imports work
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
+# Import the apps after adding the path
+from wileenAPP import wileen_app
+from roanne_carapp import roanne_app
 
 main_app = Flask(__name__, template_folder='../templates')
 

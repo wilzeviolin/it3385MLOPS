@@ -5,7 +5,7 @@ import pandas as pd
 from flask import Flask, request, jsonify, render_template
 
 # Initialize Flask app
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='../templates')
 
 # Load the trained model
 def load_model():

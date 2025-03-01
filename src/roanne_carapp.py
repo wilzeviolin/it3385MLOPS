@@ -6,7 +6,12 @@ import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 import pickle
 
-app = Flask(__name__, template_folder="../templates")
+roanne_app = Flask(__name__, template_folder='../templates')  # Correctly initialize the app
+
+# Define your routes here
+@roanne_app.route('/')
+def home():
+    return "Roanne Car App Home"
 
 # Ensure joblib does not cache to restricted directories
 os.environ["JOBLIB_TEMP_FOLDER"] = "/tmp"

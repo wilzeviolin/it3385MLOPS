@@ -22,7 +22,7 @@ def wheat_process():
 
 @main_app.route('/car')
 def car():
-    return roanne_app.view_functions['car_page']()
+    return roanne_app.view_functions['home']()
 
 @main_app.route('/car/predict', methods=['POST'])
 def car_predict():

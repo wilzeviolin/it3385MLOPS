@@ -4,8 +4,12 @@ import os
 import pandas as pd
 from flask import Flask, request, jsonify, render_template
 
-# Initialize Flask app
-app = Flask(__name__, template_folder='../templates')
+wileen_app = Flask(__name__, template_folder='../templates')  # Correctly initialize the app
+
+# Your route definitions here
+@wileen_app.route('/')
+def home():
+    return "Wileen App Home"
 
 # Load the trained model
 def load_model():

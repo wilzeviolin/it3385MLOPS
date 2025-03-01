@@ -108,6 +108,30 @@ def car_predict():
         print(traceback.format_exc())
         return jsonify({"error": f"Error predicting car price: {str(e)}"})
 
+# Add this new route to handle direct /predict requests
+@main_app.route('/predict', methods=['POST'])
+def predict_direct():
+    try:
+        form_data = request.form.to_dict()
+        print(f"Direct predict route called with data: {form_data}")
+        
+        # Determine which prediction service to use based on the form fields
+        if any(key in form_data for key in ['year', 'kilometers_driven', 'brand_model']):
+            print("Routing to car prediction")
+            return car_predict()
+        elif any(key in form_data for key in ['area', 'perimeter', 'compactness', 'length', 'width']):
+            print("Routing to wheat prediction")
+            return wheat_process()
+        else:
+            print("Could not determine prediction type")
+            return jsonify({
+                "error": "Could not determine prediction type. Please include relevant fields for car or wheat prediction."
+            })
+    except Exception as e:
+        print(f"Error in direct predict route: {e}")
+        print(traceback.format_exc())
+        return jsonify({"error": f"Prediction error: {str(e)}"})
+
 # Add a diagnostic route
 @main_app.route('/debug')
 def debug():
@@ -137,6 +161,7 @@ def debug():
             "wheat_model_exists": os.path.exists(wheat_model_path),
             "car_model_pkl_exists": os.path.exists(car_model_path_pkl),
             "car_model_joblib_exists": os.path.exists(car_model_path_joblib),
+            "routes": [rule.rule for rule in main_app.url_map.iter_rules()]
         }
         
         return jsonify(debug_info)
@@ -159,6 +184,11 @@ def test_form():
         except Exception as e:
             return f"Error: {str(e)}"
 
+# Add an error handler for 404 errors that returns JSON instead of HTML
+@main_app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({"error": "Endpoint not found. Available endpoints include /car/predict and /wheat/process"}), 404
+
 if __name__ == '__main__':
     # Print debug info at startup
     print(f"Current working directory: {os.getcwd()}")
@@ -168,5 +198,10 @@ if __name__ == '__main__':
     template_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'templates')
     print(f"Template directory: {template_dir}")
     print(f"Template directory exists: {os.path.exists(template_dir)}")
+    
+    # Print available routes
+    print("Available routes:")
+    for rule in main_app.url_map.iter_rules():
+        print(f"- {rule.rule} ({', '.join(rule.methods)})")
     
     main_app.run(host='0.0.0.0', port=5000, debug=True)

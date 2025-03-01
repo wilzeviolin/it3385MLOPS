@@ -7,16 +7,12 @@ import traceback
 
 wileen_app = Flask(__name__, template_folder='../templates')
 
-# Force Compatibility Model Loader
-def custom_load_model(file_path):
-    try:
-        with open(file_path, 'rb') as file:
-            return pickle.load(file, fix_imports=True, encoding='latin1')
-    except Exception as e:
-        print(f"Error loading model: {e}")
-        return None
+# Declare the model variable globally
+model = None
 
+# Load the trained model
 def load_model():
+    global model  # Declare model as global
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))  # Fix __file__ reference
         project_root = os.path.dirname(current_dir)
@@ -26,24 +22,18 @@ def load_model():
 
         if os.path.exists(model_path):
             with open(model_path, 'rb') as model_file:
-                loaded_model = pickle.load(model_file)
+                model = pickle.load(model_file)
                 print("Wheat model loaded successfully")
-                return loaded_model
         else:
             print(f"Wheat model file not found at {model_path}")
-            return None
+            model = None
     except Exception as e:
         print(f"Error loading wheat model: {e}")
-        return None
+        print(traceback.format_exc())
+        model = None
 
-
-# Before every request — Check Model
-@wileen_app.before_request
-def check_model():
-    global model
-    if model is None:
-        print("Re-loading model before request...")
-        model = load_model()
+# Load model at startup
+load_model()
 
 @wileen_app.route('/')
 def home_page():
@@ -51,18 +41,22 @@ def home_page():
 
 @wileen_app.route('/process', methods=['POST'])
 def process_form():
-    print("Processing Wheat Form...")
+    global model  # Declare model as global
 
-    global model  # Add this line to access the global model
+    print(f"Model loaded: {model is not None}")
 
     if model is None:
-        print("Model is not loaded, attempting to reload...")
-        model = load_model()
-    
+        print("Model not loaded, attempting to load...")
+        load_model()
+
     if model is None:
-        return jsonify({"error": "Model not loaded"})
+        print("Model still not loaded.")
+        return jsonify({"error": "Model not loaded. Please ensure the model is correctly placed and accessible."})
 
     try:
+        print(f"Wheat form data: {request.form}")
+
+        # Extract form data
         area = float(request.form['area'])
         perimeter = float(request.form['perimeter'])
         compactness = float(request.form['compactness'])
@@ -84,23 +78,37 @@ def process_form():
             'Length_Width_Ratio': [length_width_ratio]
         })
 
-        print(f"Features: {features_df}")
+        print(f"Wheat features dataframe created: {features_df}")
 
-        prediction = int(model.predict(features_df)[0])
-        print(f"Prediction: {prediction}")
-
-        return jsonify({"prediction": prediction})
+        try:
+            prediction = int(model.predict(features_df)[0])
+            print(f"Wheat prediction: {prediction}")
+            return jsonify({"prediction": prediction})
+        except Exception as predict_error:
+            print(f"Error during wheat prediction: {predict_error}")
+            print(traceback.format_exc())
+            return jsonify({"error": f"Prediction error: {str(predict_error)}"})
 
     except Exception as e:
-        print(f"Prediction Error: {e}")
+        print(f"Error processing wheat form: {e}")
+        print(traceback.format_exc())
         return jsonify({"error": str(e)})
+
+@wileen_app.before_request
+def check_model():
+    global model
+    if model is None:
+        print("Model is None, attempting to load it.")
+        load_model()
 
 @wileen_app.route('/check')
 def check():
     return jsonify({
-        "status": "Wheat App Running",
+        "status": "Wheat app is working",
         "model_loaded": model is not None
     })
 
 if __name__ == '__main__':
-    wileen_app.run(host='0.0.0.0', port=10000, debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    print(f"Starting Wheat Flask app on port {port}")
+    wileen_app.run(host='0.0.0.0', port=port, debug=True)

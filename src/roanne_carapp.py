@@ -52,11 +52,11 @@ for col in categorical_columns:
     sample_data = pd.DataFrame({col: common_values[col]})
     encoders[col].fit(sample_data)
 
-@app.route('/')
+@roanne_app.route('/')
 def home():
     return render_template('roanne_car.html')
 
-@app.route('/predict', methods=['POST'])
+@roanne_app.route('/predict', methods=['POST'])
 def predict():
     try:
         # Gather user input
@@ -142,4 +142,4 @@ def predict():
 if __name__ == '__main__':
     app.run(debug=True)
 
-app=app
+

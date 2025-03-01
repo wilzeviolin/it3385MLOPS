@@ -16,30 +16,26 @@ def custom_load_model(file_path):
         print(f"Error loading model: {e}")
         return None
 
-# Load Model
 def load_model():
     try:
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = os.path.dirname(os.path.abspath(__file__))  # Fix __file__ reference
         project_root = os.path.dirname(current_dir)
         model_path = os.path.join(project_root, 'artifacts', 'seed_pipeline.pkl')
 
-        print(f"Loading model from: {model_path}")
-        if os.path.exists(model_path):
-            model = custom_load_model(model_path)
-            if model:
-                print("Model loaded successfully")
-                return model
-            else:
-                print("Model couldn't be loaded")
-                return None
-        else:
-            print("Model file not found")
-            return None
+        print(f"Attempting to load wheat model from: {model_path}")
 
+        if os.path.exists(model_path):
+            with open(model_path, 'rb') as model_file:
+                loaded_model = pickle.load(model_file)
+                print("Wheat model loaded successfully")
+                return loaded_model
+        else:
+            print(f"Wheat model file not found at {model_path}")
+            return None
     except Exception as e:
-        print(f"Model loading error: {e}")
-        print(traceback.format_exc())
+        print(f"Error loading wheat model: {e}")
         return None
+
 
 # Before every request — Check Model
 @wileen_app.before_request
